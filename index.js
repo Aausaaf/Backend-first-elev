@@ -3,6 +3,8 @@ const root = express()
 const axios= require('axios')
 root.use(express.json())
 
+var dns = require('dns');
+
 
 let products =
     
@@ -386,6 +388,22 @@ root.delete("/products/:productId",(req,res)=>{
      products.splice(proId+1,1)
    console.log(proId)
     res.status(200).send("Delete happen")
+})
+
+
+root.post("/getmeip",(req,res)=>{
+    const {website_name:webname} = req.body
+    dns.lookup(webname, function onLookup(err, address, family) {
+        console.log('address:', address);
+        res.send(address)
+        dns.reverse(address, function (err, hostnames) {
+           if (err) {
+              console.log(err.stack);
+           }
+     
+           console.log('reverse for ' + address + ': ' + JSON.stringify(hostnames));
+        });  
+     });
 })
 
 root.listen(3003)
